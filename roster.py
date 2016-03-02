@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-"""Retrieve and print current roster for every NBA team"""
 
 import sys
 import configparser
@@ -26,12 +25,13 @@ def main():
     teams = json.loads(data.decode('UTF-8'))
     for team in teams:
         # If no more requests are available in current window, wait.
-        # Note, make sure your system is using NTP or equivalent, otherwise
-        # this will likely produce incorrect results.
+        # Important: make sure your system is using NTP or equivalent, otherwise
+        # this will produce incorrect results.
         if xmlstats_remaining == 0:
             now = int(datetime.now().strftime('%s'))
             delta = xmlstats_reset - now
-            print('Reached rate limit. Waiting {} seconds to make new request...'.format(delta))
+            print('Reached rate limit. Waiting {} seconds to make new '
+                  'request...'.format(delta))
             time.sleep(delta)
         url = build_url(host, sport, 'roster', team['team_id'], 'json', None)
         data, xmlstats_remaining, xmlstats_reset = http_get(url)
@@ -46,9 +46,8 @@ def main():
                 player['weight_lb']))
 
 def http_get(url):
-    """create http request and return response"""
     access_token = get_config_key('access_token')
-    user_agent = 'xmlstats-pyex/{} ({})'.format(
+    user_agent = 'xmlstats-expy/{} ({})'.format(
         get_config_key('version'),
         get_config_key('user_agent_contact'))
     req = urllib.request.Request(url)
@@ -86,13 +85,11 @@ def http_get(url):
     return data, xmlstats_remaining, xmlstats_reset
 
 def get_config_key(key):
-    """return value for key in config file"""
     config = configparser.ConfigParser()
     config.read('xmlstats.ini')
     return config['xmlstats'][key]
 
 def build_url(host, sport, method, id_, format_, parameters):
-    """create and return url string"""
     path = '/'.join(comp for comp in (sport, method, id_) if comp)
     url = 'https://' + host + '/' + path + '.' + format_
     if parameters:

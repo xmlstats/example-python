@@ -46,10 +46,10 @@ def main():
                 player['weight_lb']))
 
 def http_get(url):
-    access_token = get_config_key('access_token')
+    access_token = get_config('access_token')
     user_agent = 'xmlstats-expy/{} ({})'.format(
-        get_config_key('version'),
-        get_config_key('user_agent_contact'))
+        get_config('version'),
+        get_config('user_agent_contact'))
     req = urllib.request.Request(url)
     # Set Authorization header
     req.add_header('Authorization', 'Bearer ' + access_token)
@@ -84,7 +84,7 @@ def http_get(url):
         data = response.read()
     return data, xmlstats_remaining, xmlstats_reset
 
-def get_config_key(key):
+def get_config(key):
     config = configparser.ConfigParser()
     config.read('xmlstats.ini')
     return config['xmlstats'][key]

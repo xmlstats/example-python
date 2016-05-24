@@ -9,6 +9,7 @@ import urllib.error
 import gzip
 import json
 from datetime import datetime
+from datetime import timedelta
 import time
 
 def main():
@@ -28,10 +29,9 @@ def main():
         # Important: make sure your system is using NTP or equivalent, otherwise
         # this will produce incorrect results.
         if xmlstats_remaining == 0:
-            now = int(datetime.now().strftime('%s'))
-            delta = xmlstats_reset - now
+            delta = (datetime.fromtimestamp(xmlstats_reset) - datetime.now()).total_seconds()
             print('Reached rate limit. Waiting {} seconds to make new '
-                  'request...'.format(delta))
+                  'request...'.format(int(delta)))
             time.sleep(delta)
         url = build_url(host, sport, 'roster', team['team_id'], 'json', None)
         data, xmlstats_remaining, xmlstats_reset = http_get(url)
